@@ -60,8 +60,8 @@ body {
     width: 100px;
     height: 100px;
     background-color: #FF0000;
-    bottom:0px;
-    right:0px;
+    bottom: 0px;
+    right: 0px;
 }
 
 #squareTree {
@@ -71,7 +71,7 @@ body {
     left: 400px;
     top: 150px;
     opacity: 1;
-    transition: all 1s ease-in-out;  
+    transition: all 1s ease-in-out;
 
 }
 
@@ -82,15 +82,31 @@ body {
     left: 416px;
     top: 166px;
     opacity: 1;
-    transition: all 1s ease-in-out;  
+    transition: all 1s ease-in-out;
+}
 
+#well {
+    width: 64px;
+    height: 64px;
+    background-color: #FF0000;
+    left: 288px;
+    top: 96px;
+}
+
+#doorWizardHut {
+    width: 32px;
+    height: 64px;
+    background-color: #FF0000;
+    left: 177px;
+    top: 287px;
 }
 
 #hero {
+    top: 0px;
+    left: 0px;
     width: 32px;
     height: 32px;
-    background-color: #fe00cb;
-    transition: all 1s ease-in-out;  
+    transition: all 1s ease-in-out;
 
 }
 
