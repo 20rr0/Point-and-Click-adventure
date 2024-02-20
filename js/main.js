@@ -18,6 +18,7 @@ gameWindow.onclick = function (e) {
     var y = e.clientY - rect.top;
 
     //TODO: calc offset based on character size
+    //TODO: making dialog functionality
 
     if (e.target.id !== "heroImage") {
         mainCharacter.style.left = x - offsetCharacter + "px";
@@ -41,6 +42,9 @@ gameWindow.onclick = function (e) {
                 console.log("Fuck this door is locked and I don't have a key. boohoo :(");
             }
             break;
+        case "statue":
+            console.log("hey you.. wanna know where the key is? It's by the graves.");
+            break;
 
         default:
             break;
@@ -60,6 +64,11 @@ gameWindow.onclick = function (e) {
         console.log(inventory);
     }
 
+    /**
+     * This returns string value if it exist within the array
+     * @param {string} itemName 
+     * @returns 
+     */
     function checkItem(itemName) {
         return inventory.includes(itemName);
     }
