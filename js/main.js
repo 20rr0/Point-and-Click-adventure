@@ -1,67 +1,104 @@
 document.getElementById("mainTitle").innerText = "Point and Click adventure game";
+// Game State
+let gameState = {
+    "inventory": [],
+    "coinPickedUp": false
+}
 
-//Game window reference
-const gameWindow = document.getElementById("gameWindow");
-
-//Inventory
-let inventory = [];
-console.log(inventory);
-const inventoryList = document.getElementById("inventoryList");
-//Main Character
-const mainCharacter = document.getElementById("hero");
-const offsetCharacter = 16;
-const tree1 = document.getElementById("squareTree");
-
-gameWindow.onclick = function (e) {
-    var rect = gameWindow.getBoundingClientRect();
-    var x = e.clientX - rect.left;
-    var y = e.clientY - rect.top;
-
-    //TODO: calc offset based on character size
-    //TODO: making dialog functionality
-
-    if (e.target.id !== "heroImage") {
-        mainCharacter.style.left = x - offsetCharacter + "px";
-        mainCharacter.style.top = y - offsetCharacter + "px";
+// load data from save file
+fetch('data/save.json').then((response) => {
+    if (response.status == 404) {
+        alert('file not found!');
+    } else {
+        return response.json();
     }
+}).then((resJson) => {
+    gameState = resJson;
+    runGame();
+}).catch((error) => {
+    console.error(error)
+})
 
-    switch (e.target.id) {
-        case "key":
-            getItem("Rusty key", "rustyKey");
-            break;
-        case "well":
-            getItem("Coin", "coin");
-            break;
-        case "doorWizardHut":
-            if (checkItem("Rusty key")) {
-                console.log("I opened the door. Yeah!");
-            } else if (checkItem("Coin")) {
-                removeItem("Coin", "coin")
-                console.log("Oh no I lost the coin and it didn't open the door.. Feel kinda stupid..");
-            } else {
-                console.log("Fuck this door is locked and I don't have a key. boohoo :(");
-            }
-            break;
-        case "statue":
-            console.log("hey you.. wanna know where the key is? It's by the graves.");
-            break;
+function runGame() {
+    //Game window reference
+    const gameWindow = document.getElementById("gameWindow");
+    const inventoryList = document.getElementById("inventoryList");
 
-        default:
-            break;
+    //Main Character
+    const mainCharacter = document.getElementById("hero");
+    const offsetCharacter = 16;
+    const tree1 = document.getElementById("squareTree");
 
-    }
-    /**
-     * Checks if the value exists within the array
-     * If not then it adds value to the array and use showItem function
-     * @param {string} itemName 
-     * @param {string} itemId 
-     */
-    function getItem(itemName, itemId) {
-        if (!checkItem(itemName)) {
-            inventory.push(itemName);
-            showItem(itemName, itemId);
+
+    gameWindow.onclick = function (e) {
+        var rect = gameWindow.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+
+        //TODO: calc offset based on character size
+        //TODO: making dialog functionality
+
+        if (e.target.id !== "heroImage") {
+            mainCharacter.style.left = x - offsetCharacter + "px";
+            mainCharacter.style.top = y - offsetCharacter + "px";
         }
-        console.log(inventory);
+
+        switch (e.target.id) {
+            case "key":
+                console.log("pick up key")
+                document.getElementById("key").remove();
+                changeInventory('key', "add");
+                break;
+            case "well":
+                if (gameState.coinPickedUp == false) {
+                    changeInventory("coin", "add");
+                    gameState.coinPickedUp = true;
+                } else {
+                    console.log("There are no more coins in this well!");
+                }
+                break;
+            case "doorWizardHut":
+                if (checkItem("key")) {
+                    console.log("I opened the door. Yeah!");
+                } else if (checkItem("coin")) {
+                    changeInventory("coin", "remove");
+                    console.log("Oh no I lost the coin and it didn't open the door.. Feel kinda stupid..");
+                } else {
+                    console.log("Fuck this door is locked and I don't have a key. boohoo :(");
+                }
+                break;
+            case "statue":
+                console.log("hey you.. wanna know where the key is? It's by the graves.");
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Add or remove item in inventory
+     * @param {string} itemName 
+     * @param {string} action 
+     */
+    function changeInventory(itemName, action) {
+        if (itemName == null || action == null) {
+            console.error("Wrong parameters given to changeInventory()");
+            return;
+        }
+
+        switch (action) {
+            case 'add':
+                gameState.inventory.push(itemName);
+                break;
+            case 'remove':
+                gameState.inventory = gameState.inventory.filter(function (newInventory) {
+                    return newInventory !== itemName;
+                });
+                document.getElementById("inv-" + itemName).remove();
+                break;
+
+        }
+        updateInventory(gameState.inventory, inventoryList);
     }
 
     /**
@@ -70,34 +107,16 @@ gameWindow.onclick = function (e) {
      * @returns 
      */
     function checkItem(itemName) {
-        return inventory.includes(itemName);
+        return gameState.inventory.includes(itemName);
     }
 
-    /**
-     * Needs a name for displaying item and a html id name
-     * @param {string} itemName 
-     * @param {string} itemId 
-     */
-    function showItem(itemName, itemId) {
-        console.log('You\'ve found a ' + itemName + '!');
-        const keyElement = document.createElement("li");
-        keyElement.id = itemId;
-        keyElement.innerText = itemName;
-        inventoryList.appendChild(keyElement);
+    function updateInventory(inventory, inventoryList) {
+        inventoryList.innerHTML = '';
+        inventory.forEach(function (item) {
+            const inventoryItem = document.createElement("li");
+            inventoryItem.id = 'inv-' + item;
+            inventoryItem.innerText = item;
+            inventoryList.appendChild(inventoryItem);
+        })
     }
-
-    /**
-     * Removes item from array and the element within the HTML
-     * @param {string} itemName 
-     * @param {string} itemId 
-     */
-    function removeItem(itemName, itemId) {
-        //remove item in Array
-        inventory = inventory.filter(function (newInventory) {
-            return newInventory !== itemName;
-        });
-        document.getElementById(itemId).remove();
-    }
-
-
 }
