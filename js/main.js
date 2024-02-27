@@ -6,6 +6,7 @@ let gameState = {
 }
 
 // load data from save file
+/*
 fetch('data/save.json').then((response) => {
     if (response.status == 404) {
         alert('file not found!');
@@ -18,15 +19,23 @@ fetch('data/save.json').then((response) => {
 }).catch((error) => {
     console.error(error)
 })
+*/
 
 function runGame() {
     //Game window reference
     const gameWindow = document.getElementById("gameWindow");
     const inventoryList = document.getElementById("inventoryList");
+    const sec = 1000;
 
     //Main Character
     const mainCharacter = document.getElementById("hero");
     const offsetCharacter = 16;
+    
+    //speech bubbles
+    const heroSpeech = document.getElementById("heroSpeech");
+    const counsterSpeech = document.getElementById("counterSpeech");
+
+    //Objects
     const tree1 = document.getElementById("squareTree");
 
 
@@ -59,15 +68,19 @@ function runGame() {
                 break;
             case "doorWizardHut":
                 if (checkItem("key")) {
+                    showMessage(heroSpeech,"I opened the door. Yeah!");
                     console.log("I opened the door. Yeah!");
                 } else if (checkItem("coin")) {
                     changeInventory("coin", "remove");
+                    showMessage(heroSpeech,"Oh no I lost the coin and it didn't open the door.. Feel kinda stupid..");
                     console.log("Oh no I lost the coin and it didn't open the door.. Feel kinda stupid..");
                 } else {
+                    showMessage(heroSpeech,"Fuck this door is locked and I don't have a key. boohoo :(");
                     console.log("Fuck this door is locked and I don't have a key. boohoo :(");
                 }
                 break;
             case "statue":
+                showMessage(heroSpeech,"hey you.. wanna know where the key is? It's by the graves.");
                 console.log("hey you.. wanna know where the key is? It's by the graves.");
                 break;
             default:
@@ -119,4 +132,24 @@ function runGame() {
             inventoryList.appendChild(inventoryItem);
         })
     }
+
+    /**
+     * It will show dialog.
+     * @param {getElementById} targetBubble 
+     * @param {string} message 
+     */
+    function showMessage(targetBubble, message){
+        targetBubble.innerText = message;
+        targetBubble.style.opacity = 1;
+        setTimeout(hideMessage,4* sec,targetBubble);
+    }
+
+    function hideMessage(targetBubble){
+        targetBubble.innerText = "...";
+        targetBubble.style.opacity = 0;
+    }
+    
+    
 }
+
+runGame();
